@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to Centos 6.6 Base
-FROM appcontainers/centos66
+FROM centos:6.6
 
 # File Author / Maintainer
 MAINTAINER Rich Nason richard.na@bbhmedia.com
