@@ -18,4 +18,6 @@ service smb start
 # Remove the runconfig line
 sed -ie 's/\/tmp\/\.\/runconfig.sh/#\/tmp\/\.\/runconfig.sh/g' ~/.bashrc
 
+chmod 2777 /home/samba
+
 unset SMB_USER SMB_PASS
