@@ -1,67 +1,26 @@
-############################################################
-# Dockerfile to build Data Volume attachable Samba container
-# Based on appcontainers/centos66
-############################################################
+FROM ubuntu:20.04
 
-# Set the base image to Centos 6.6 Base
-FROM centos:6.6
-
-# File Author / Maintainer
-MAINTAINER Rich Nason richard.na@bbhmedia.com
-
-#*************************
-#*       Versions        *
-#*************************
-
-
-#**********************************
-#* Override Enabled ENV Variables *
-#**********************************
 ENV SMB_USER samba
 ENV SMB_PASS password
 
-#**************************
-#*   Add Required Files   *
-#**************************
 ADD smb.conf /tmp/
 ADD runconfig.sh /tmp/
 
-#*************************
-#*  Update and Pre-Reqs  *
-#*************************
-RUN yum clean all && \
-yum -y update && \
-yum -y install samba4 samba4-client && \
+RUN apt-get clean && \
+apt-get update && \
+apt-get upgrade -y && \
+apt-get install samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 samba-client -y && \
 rm -fr /var/cache/*
 
-
-#*************************
-#*  Application Install  *
-#*************************
-# Move the Samba Conf file
 RUN mv /etc/samba/smb.conf /etc/samba/smb.conf.orig && \
 mv /tmp/smb.conf /etc/samba/
 
-#************************
-#* Post Deploy Clean Up *
-#************************
-
-
-#**************************
-#*  Config Startup Items  *
-#**************************
-# Put the services that need to be started into the bashrc file
 RUN echo "service rpcbind start" >> ~/.bashrc && \
 chmod +x /tmp/runconfig.sh && \
 echo "/tmp/./runconfig.sh" >> ~/.bashrc
 
 CMD /bin/bash
 
-
-#****************************
-#* Expose Application Ports *
-#****************************
-# Expose ports to other containers only
 EXPOSE 138/udp
 EXPOSE 139
 EXPOSE 445
