@@ -9,7 +9,7 @@ ADD runconfig.sh /tmp/
 RUN apt-get clean && \
 apt-get update && \
 apt-get upgrade -y && \
-apt-get install samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 samba-client -y && \
+apt-get install samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 smbclient=2:4.15.13+dfsg-0ubuntu0.20.04.2 -y && \
 rm -fr /var/cache/*
 
 RUN mv /etc/samba/smb.conf /etc/samba/smb.conf.orig && \
