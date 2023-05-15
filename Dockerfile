@@ -1,22 +1,20 @@
 FROM ubuntu:20.04
 
-ENV SMB_USER samba
-ENV SMB_PASS password
+ARG SMB_USER=samba
+ARG SMB_PASS=password
 
-RUN apt-get clean && \
-    apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 smbclient=2:4.15.13+dfsg-0ubuntu0.20.04.2 -y && \
-    rm -fr /var/cache/*
+RUN apt-get update && \
+    apt-get install --no-install-recommends samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 smbclient=2:4.15.13+dfsg-0ubuntu0.20.04.2 -y && \
+    apt-get clean
 
 ADD smb.conf /tmp/
 RUN mv /etc/samba/smb.conf /etc/samba/smb.conf.orig && \
-    mv /tmp/smb.conf /etc/samba/
+    mv /tmp/smb.conf /etc/samba/ && \
+    useradd --create-home ${SMB_USER} && \
+    chmod 2777 /home/${SMB_USER} && \
+    printf "${SMB_PASS}\n${SMB_PASS}\n" | smbpasswd -a -s ${SMB_USER}
 
-ADD runconfig.sh /tmp/
-RUN chmod +x /tmp/runconfig.sh && echo "/tmp/./runconfig.sh" >> ~/.bashrc
-
-CMD /bin/bash
+CMD service smbd start && tail -f /var/log/samba/samba.log
 
 EXPOSE 138/udp
 EXPOSE 139
