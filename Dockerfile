@@ -5,9 +5,10 @@ ARG SMB_PASS=password
 
 RUN apt-get update && \
     apt-get install --no-install-recommends samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 smbclient=2:4.15.13+dfsg-0ubuntu0.20.04.2 -y && \
-    apt-get clean
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-ADD smb.conf /tmp/
+COPY smb.conf /tmp/
 RUN mv /etc/samba/smb.conf /etc/samba/smb.conf.orig && \
     mv /tmp/smb.conf /etc/samba/ && \
     useradd --create-home ${SMB_USER} && \
