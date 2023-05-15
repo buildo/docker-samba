@@ -1,67 +1,22 @@
-############################################################
-# Dockerfile to build Data Volume attachable Samba container
-# Based on appcontainers/centos66
-############################################################
+FROM ubuntu:20.04
 
-# Set the base image to Centos 6.6 Base
-FROM centos:6.6
+ARG SMB_USER=samba
+ARG SMB_PASS=password
 
-# File Author / Maintainer
-MAINTAINER Rich Nason richard.na@bbhmedia.com
+RUN apt-get update && \
+    apt-get install --no-install-recommends samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 smbclient=2:4.15.13+dfsg-0ubuntu0.20.04.2 -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-#*************************
-#*       Versions        *
-#*************************
-
-
-#**********************************
-#* Override Enabled ENV Variables *
-#**********************************
-ENV SMB_USER samba
-ENV SMB_PASS password
-
-#**************************
-#*   Add Required Files   *
-#**************************
-ADD smb.conf /tmp/
-ADD runconfig.sh /tmp/
-
-#*************************
-#*  Update and Pre-Reqs  *
-#*************************
-RUN yum clean all && \
-yum -y update && \
-yum -y install samba4 samba4-client && \
-rm -fr /var/cache/*
-
-
-#*************************
-#*  Application Install  *
-#*************************
-# Move the Samba Conf file
+COPY smb.conf /tmp/
 RUN mv /etc/samba/smb.conf /etc/samba/smb.conf.orig && \
-mv /tmp/smb.conf /etc/samba/
+    mv /tmp/smb.conf /etc/samba/ && \
+    useradd --create-home ${SMB_USER} && \
+    chmod 2777 /home/${SMB_USER} && \
+    printf "${SMB_PASS}\n${SMB_PASS}\n" | smbpasswd -a -s ${SMB_USER}
 
-#************************
-#* Post Deploy Clean Up *
-#************************
+CMD service smbd start && tail -f /var/log/samba/samba.log
 
-
-#**************************
-#*  Config Startup Items  *
-#**************************
-# Put the services that need to be started into the bashrc file
-RUN echo "service rpcbind start" >> ~/.bashrc && \
-chmod +x /tmp/runconfig.sh && \
-echo "/tmp/./runconfig.sh" >> ~/.bashrc
-
-CMD /bin/bash
-
-
-#****************************
-#* Expose Application Ports *
-#****************************
-# Expose ports to other containers only
 EXPOSE 138/udp
 EXPOSE 139
 EXPOSE 445
