@@ -1,10 +1,10 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG SMB_USER=samba
 ARG SMB_PASS=password
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends samba=2:4.15.13+dfsg-0ubuntu0.20.04.2 smbclient=2:4.15.13+dfsg-0ubuntu0.20.04.2 -y && \
+    apt-get install --no-install-recommends samba=2:4.19.5+dfsg-4ubuntu9 smbclient=2:4.19.5+dfsg-4ubuntu9 -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
