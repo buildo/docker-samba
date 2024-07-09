@@ -6,7 +6,8 @@ ARG SMB_PASS=password
 RUN apt-get update && \
     apt-get install --no-install-recommends samba=2:4.19.5+dfsg-4ubuntu9 smbclient=2:4.19.5+dfsg-4ubuntu9 -y && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /home/ubuntu
 
 COPY smb.conf /tmp/
 RUN mv /etc/samba/smb.conf /etc/samba/smb.conf.orig && \
