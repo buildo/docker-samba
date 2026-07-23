@@ -1,10 +1,13 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ARG SMB_USER=samba
 ARG SMB_PASS=password
+ARG SAMBA_VERSION=2:4.23.6+dfsg-1ubuntu2.1
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends samba=2:4.19.5+dfsg-4ubuntu9 smbclient=2:4.19.5+dfsg-4ubuntu9 -y && \
+    apt-get install --no-install-recommends -y \
+      samba=${SAMBA_VERSION} \
+      smbclient=${SAMBA_VERSION} && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /home/ubuntu
